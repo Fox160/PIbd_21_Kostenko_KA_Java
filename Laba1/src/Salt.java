@@ -1,7 +1,7 @@
 
 public class Salt {
 
-	private double salt;
+	private double salt = 0;
 
 	public void setSalt(double salt) {
 

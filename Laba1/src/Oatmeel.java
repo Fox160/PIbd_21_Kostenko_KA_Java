@@ -1,14 +1,14 @@
 
 public class Oatmeel {
-	private int has_ready = 0;
+	private int hasReady = 0;
 
-	public int getHas_Ready() {
-		return has_ready;
+	public int getHasReady() {
+		return hasReady;
 	}
 
 	public void GetHeat() {
-		if (has_ready < 10) {
-			has_ready++;
+		if (hasReady < 10) {
+			hasReady++;
 		}
 	}
 }
