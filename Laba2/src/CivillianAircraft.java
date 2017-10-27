@@ -75,7 +75,6 @@ public class CivillianAircraft extends Aircraft {
 		g.fillPolygon(xPoints, yPoints, xPoints.length);
 
 		// тело
-		g.setColor(Color.BLUE);
 		g.fillOval(startPosX - 5, startPosY - 60, 30, 18);
 		g.setColor(getColorBody());
 		g.fillOval(startPosX - 50, startPosY - 49, 100, 40);
