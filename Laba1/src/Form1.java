@@ -260,15 +260,17 @@ public class Form1 {
 
 		buttonCook.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!pan.readyToGoMilk()) {
-					JOptionPane.showMessageDialog(frame, "У нас не все готово к варке!", "Ошибка логики",
-							JOptionPane.ERROR_MESSAGE);
-					return;
-				}
 				if (!stove.getState()) {
 					JOptionPane.showMessageDialog(frame, "Нужно включить плиту", "Ошибка логики",
 							JOptionPane.ERROR_MESSAGE);
 					return;
+				}
+				if (!stove.getPan().CheckMilk())
+				{
+					JOptionPane.showMessageDialog(frame, "Молока нет", "Ошибка логики",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+					
 				}
 				if (!stove.getPan().IsReadyMilk()) {
 					stove.Cook();
@@ -277,9 +279,15 @@ public class Form1 {
 					return;
 				}
 				if (oatmeel == null || oatmeel.length == 0) {
+					JOptionPane.showMessageDialog(frame, "Овсянки нет в ингредиентах", "Ошибка логики", JOptionPane.ERROR_MESSAGE);
+					return;
+				} 
+				if (!stove.getPan().CheckOatmeel())
+	            {
 					JOptionPane.showMessageDialog(frame, "Овсянки нет", "Ошибка логики", JOptionPane.ERROR_MESSAGE);
 					return;
-				} else if (!stove.getPan().IsReadyOatmeel()) {
+	            }
+				if (!stove.getPan().IsReadyOatmeel()) {
 					stove.Cook();
 					JOptionPane.showMessageDialog(frame, "Овсянка готова", "Кухня", JOptionPane.INFORMATION_MESSAGE);
 					buttonGetPan.setEnabled(true);

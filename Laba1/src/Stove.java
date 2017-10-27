@@ -21,16 +21,10 @@ public class Stove {
 	}
 
 	public void Cook() {
-		if (getState()) {
-			if (!pan.IsReadyMilk()) {
-				while (!pan.IsReadyMilk())
-					pan.GetHeat();
-			} else {
-				if (!pan.IsReadyOatmeel()) {
-					while (!pan.IsReadyOatmeel())
-						pan.GetHeat();
-				}
-			}
-		}
+		if (getState())
+        {
+           while (!pan.IsReady())
+                pan.GetHeat();
+        }
 	}
 }

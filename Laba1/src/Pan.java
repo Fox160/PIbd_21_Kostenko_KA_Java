@@ -5,14 +5,6 @@ public class Pan {
 	private Sugar sugar;
 	private Oatmeel[] oatmeel;
 
-	public boolean readyToGoMilk() {
-		return CheckMilk();
-	}
-
-	public boolean readyToGoOatmeel() {
-		return CheckOatmeel();
-	}
-
 	public void AddMilk(Milk[] m) {
 		milk = m;
 	}
@@ -29,7 +21,7 @@ public class Pan {
 		oatmeel = oat;
 	}
 
-	private boolean CheckMilk() {
+	public boolean CheckMilk() {
 		if (milk == null || milk.length == 0) {
 			return false;
 		}
@@ -42,7 +34,7 @@ public class Pan {
 		return true;
 	}
 
-	private boolean CheckOatmeel() {
+	public boolean CheckOatmeel() {
 		if (oatmeel == null || oatmeel.length == 0) {
 			return false;
 		}
@@ -56,25 +48,42 @@ public class Pan {
 	}
 
 	public void GetHeat() {
-		if (!CheckMilk()) {
-			return;
-		}
-		if (!IsReadyMilk()) {
-			for (int i = 0; i < milk.length; ++i) {
-				milk[i].GetHeat();
-			}
-		}
-		if (!CheckOatmeel()) {
-			return;
-		}
-		if (IsReadyMilk() && (!IsReadyOatmeel())) {
-			for (int i = 0; i < oatmeel.length; ++i) {
-				oatmeel[i].GetHeat();
-			}
-		}
+		if (!CheckMilk())
+        {
+            return;
+        }
+        for (int i = 0; i < milk.length; ++i)
+        {
+            milk[i].GetHeat();
+        }
+
+        if (!CheckOatmeel())
+        {
+            return;
+        }
+        for (int i = 0; i < oatmeel.length; ++i)
+        {
+            oatmeel[i].GetHeat();
+        }
 
 	}
 
+	public boolean IsReady()
+    {
+        if (IsReadyMilk())
+        {
+            if (!CheckOatmeel())
+            {
+                return true;
+            }
+            else
+            {
+                return IsReadyOatmeel();
+            }
+        }
+        return false;
+    }
+	
 	public boolean IsReadyMilk() {
 		if (milk == null) {
 			return false;
