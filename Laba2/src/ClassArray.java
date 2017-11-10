@@ -1,67 +1,52 @@
 import java.awt.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClassArray<T extends ITech> {
-	private ArrayList<T> places;
-    private T defaultValue;
 
-    public ClassArray(int sizes, T defVal)
-    {
-        defaultValue = defVal;
-        places = new ArrayList<T>();
-        for (int i = 0; i < sizes; i++)
-        {
-        	places.add(i, defaultValue);
-        }
-    }
+	private HashMap<Integer, T> places;
+	private int maxCount;
+	private T defaultValue;
 
-    public int add(ClassArray<T> p, T aircraft)
-    {
-        for (int i = 0; i < p.places.size(); i++)
-        {
-            if (p.CheckFreePlace(i))
-            {
-                p.places.add(i, aircraft);
-                return i;
-            }
-        }
-        return -1;
-    }
+	public ClassArray(int sizes, T defVal) {
+		defaultValue = defVal;
+		places = new HashMap<Integer, T>();
+		maxCount = sizes;
+	}
 
-    public T dec(ClassArray<T> p, int index)
-    {
-        if (!p.CheckFreePlace(index))
-        {
-            T aircraft = p.places.get(index);
-            p.places.set(index, p.defaultValue);
-            return aircraft;
-        }
-        return p.defaultValue;
-    }
+	public int addAircraft(T aircraft) {
+		if (this.places.size() == this.maxCount) {
+			return -1;
+		}
 
-    private boolean CheckFreePlace(int index)
-    {
-        if (index < 0 || index > places.size())
-        {
-            return false;
-        }
-        if (places.get(index) == null)
-        {
-            return true;
-        }
-        if (places.get(index).equals(defaultValue))
-        {
-            return true;
-        }
-        return false;
-    }
+		for (int i = 0; i < this.places.size(); i++) {
+			if (this.CheckFreePlace(i)) {
+				this.places.put(i, aircraft);
+				return i;
+			}
+		}
+		this.places.put(this.places.size(), aircraft);
+		return this.places.size() - 1;
+	}
 
-    public T getObject(int ind)
-    {
-        if (ind > -1 && ind < places.size())
-        {
-            return places.get(ind);
-        }
-        return defaultValue;
-    }
+	public T dec(int index) {
+		if (this.places.containsKey(index)) {
+			T aircraft = this.getPlace(index);
+			this.places.remove(index);
+			return aircraft;
+		}
+		return this.defaultValue;
+	}
+
+	private boolean CheckFreePlace(int index) {
+		return !places.containsKey(index);
+	}
+
+	public T getPlace(int ind) {
+		if (ind > -1 && ind < places.size()) {
+			return places.get(ind);
+		}
+		return defaultValue;
+	}
 }
