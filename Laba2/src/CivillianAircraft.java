@@ -2,6 +2,18 @@ import java.awt.*;
 import java.util.Random;
 
 public class CivillianAircraft extends Aircraft {
+
+	public CivillianAircraft(int maxSpeed, int maxCountPassenger, int weight, Color color) {
+		setMaxSpeed(maxSpeed);
+		setMaxCountPassengers(maxCountPassenger);
+		setColorBody(color);
+		setWeight(weight);
+		countPassengers = 0;
+
+		startPosX = 75;
+		startPosY = 90;
+	}
+
 	@Override
 	protected void setMaxSpeed(int value) {
 		if (value > 0 && value < 300) {
@@ -36,18 +48,6 @@ public class CivillianAircraft extends Aircraft {
 		} else {
 			super.setMaxHeight(500);
 		}
-	}
-
-	public CivillianAircraft(int maxSpeed, int maxCountPassenger, int weight, Color color) {
-		setMaxSpeed(maxSpeed);
-		setMaxCountPassengers(maxCountPassenger);
-		setColorBody(color);
-		setWeight(weight);
-		countPassengers = 0;
-
-		Random rand = new Random();
-		startPosX = rand.nextInt() % 110 + 70;
-		startPosY = rand.nextInt() % 130 + 70;
 	}
 
 	@Override

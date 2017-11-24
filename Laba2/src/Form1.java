@@ -12,6 +12,11 @@ public class Form1 {
 	private Aerodrome aerodrome;
 	private JTextField textField;
 
+	JButton buttonSetAircraft = new JButton(
+			"\u0417\u0430\u043A\u0430\u0437\u0430\u0442\u044C \u0441\u0430\u043C\u043E\u043B\u0451\u0442");
+
+	private FormSelectAircraft dialog;
+
 	/**
 	 * Launch the application.
 	 */
@@ -42,6 +47,9 @@ public class Form1 {
 		initialize();
 		listLevels.setFont(new Font("Microsoft Sans Serif", Font.PLAIN, 11));
 		listLevels.setSelectedIndex(aerodrome.getCurrentLevel());
+
+		buttonSetAircraft.setBounds(890, 207, 142, 60);
+		frame.getContentPane().add(buttonSetAircraft);
 		draw();
 	}
 
@@ -64,53 +72,6 @@ public class Form1 {
 		aerodromeJPanel.setBounds(0, 0, 845, 509);
 		frame.getContentPane().add(aerodromeJPanel);
 
-		JButton buttonSetCivillianAircraft = new JButton(
-				"\u041F\u0440\u0438\u043F\u0430\u0440\u043A\u043E\u0432\u0430\u0442\u044C \u0441\u0430\u043C\u043E\u043B\u0451\u0442");
-		buttonSetCivillianAircraft.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				ColorDialog colorD = new ColorDialog(frame, true);
-				colorD.setVisible(true);
-				CivillianAircraft aircraft = new CivillianAircraft(100, 4, 1000, colorD.getColor());
-				int place = aerodrome.putAircraftInAerodrome(aircraft);
-
-				if (place >= aerodrome.countPlaces) {
-					JOptionPane.showMessageDialog(frame, "На аэродроме нету мест", "Ошибка", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				aerodromeJPanel.updateAerodrome(aerodrome);
-				JOptionPane.showMessageDialog(frame, "Ваше место: " + place, "Аэродром",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		});
-		buttonSetCivillianAircraft.setFont(new Font("Microsoft Sans Serif", Font.PLAIN, 11));
-		buttonSetCivillianAircraft.setBounds(871, 169, 184, 41);
-		frame.getContentPane().add(buttonSetCivillianAircraft);
-
-		JButton buttonSetFighterAircraft = new JButton(
-				"\u041F\u0440\u0438\u043F\u0430\u0440\u043A\u043E\u0432\u0430\u0442\u044C \u0438\u0441\u0442\u0440\u0435\u0431\u0438\u0442\u0435\u043B\u044C");
-		buttonSetFighterAircraft.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				ColorDialog colorD = new ColorDialog(frame, true);
-				colorD.setVisible(true);
-				ColorDialog dopColor = new ColorDialog(frame, true);
-				dopColor.setVisible(true);
-				CivillianAircraft aircraft = new FighterAircraft(100, 4, 1000, colorD.getColor(), true, true, true,
-						dopColor.getColor(), 4);
-				int place = aerodrome.putAircraftInAerodrome(aircraft);
-
-				if (place >= aerodrome.countPlaces) {
-					JOptionPane.showMessageDialog(frame, "На аэродроме нету мест", "Ошибка", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				aerodromeJPanel.updateAerodrome(aerodrome);
-				JOptionPane.showMessageDialog(frame, "Ваше место: " + place, "Аэродром",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		});
-		buttonSetFighterAircraft.setFont(new Font("Microsoft Sans Serif", Font.PLAIN, 11));
-		buttonSetFighterAircraft.setBounds(871, 221, 184, 41);
-		frame.getContentPane().add(buttonSetFighterAircraft);
-
 		JLabel label = new JLabel("");
 		label.setBorder(BorderFactory.createTitledBorder("Забрать самолёт"));
 		label.setFont(new Font("Microsoft Sans Serif", Font.PLAIN, 11));
@@ -130,6 +91,27 @@ public class Form1 {
 		aircraftJPanel = new AircraftPanel(null);
 		aircraftJPanel.setBounds(871, 377, 184, 110);
 		frame.getContentPane().add(aircraftJPanel);
+
+		buttonSetAircraft.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dialog = new FormSelectAircraft(frame);
+				if (dialog.execute()) {
+					ITech aircraft = dialog.getAircraft();
+					if (aircraft == null) {
+						JOptionPane.showMessageDialog(frame, "Самолёт не создан");
+						return;
+					}
+					int place = aerodrome.putAircraftInAerodrome(aircraft);
+					if (place != -1) {
+						aerodromeJPanel.repaint();
+						JOptionPane.showMessageDialog(frame, "Ваше место " + (place + 1));
+					} else {
+						JOptionPane.showMessageDialog(frame, "Мест нет");
+					}
+
+				}
+			}
+		});
 
 		JButton buttonTakeAircraft = new JButton("\u0417\u0430\u0431\u0440\u0430\u0442\u044C");
 		buttonTakeAircraft.addActionListener(new ActionListener() {

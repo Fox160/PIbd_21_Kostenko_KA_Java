@@ -56,4 +56,8 @@ public class FighterAircraft extends CivillianAircraft {
 			drawStar(g, startPosX - 56, startPosY - 60);
 		}
 	}
+
+	public void setDopColor(Color color) {
+		dopColor = color;
+	}
 }

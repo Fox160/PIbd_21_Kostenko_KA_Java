@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics;
 
 public interface ITech {
@@ -10,4 +11,6 @@ public interface ITech {
 	void loadPassenger(int count);
 
 	int getPassenger();
+
+	void setMainColor(Color color);
 }

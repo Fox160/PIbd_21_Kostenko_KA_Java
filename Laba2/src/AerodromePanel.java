@@ -21,5 +21,4 @@ public class AerodromePanel extends JPanel {
 		super.paint(g);
 		aerodrome.drawAerodrome(g);
 	}
-
 }

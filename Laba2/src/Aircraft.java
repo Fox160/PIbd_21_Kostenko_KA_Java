@@ -70,4 +70,8 @@ public abstract class Aircraft implements ITech {
 		countPassengers = 0;
 		return count;
 	}
+
+	public void setMainColor(Color color) {
+		colorBody = color;
+	}
 }

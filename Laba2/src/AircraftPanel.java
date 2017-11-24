@@ -1,8 +1,12 @@
 import java.awt.Graphics;
 import javax.swing.JPanel;
 
-public class AircraftPanel extends JPanel {
+public class AircraftPanel extends DropAircraftPanel {
 	private ITech aircraft;
+
+	public AircraftPanel() {
+		this.aircraft = null;
+	}
 
 	public AircraftPanel(ITech aircraft) {
 		updateAircraft(aircraft);
