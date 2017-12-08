@@ -43,7 +43,7 @@ public abstract class Aircraft implements ITech {
 		this.colorBody = color;
 	}
 
-	public double getWeight() {
+	public int getWeight() {
 		return this.weight;
 	}
 
@@ -74,4 +74,6 @@ public abstract class Aircraft implements ITech {
 	public void setMainColor(Color color) {
 		colorBody = color;
 	}
+	
+	 public abstract String getInfo();
 }

@@ -13,6 +13,24 @@ public class CivillianAircraft extends Aircraft {
 		startPosX = 75;
 		startPosY = 90;
 	}
+	
+	public CivillianAircraft(String info) {
+		String[] strs = info.split(";");
+		
+		if (strs.length == 4) {
+			setMaxSpeed(Integer.parseInt(strs[0]));
+			setMaxCountPassengers(Integer.parseInt(strs[1]));
+			setWeight(Integer.parseInt(strs[2]));
+			
+			int r = Integer.parseInt(strs[3].split(",")[0]);
+			int g = Integer.parseInt(strs[3].split(",")[1]);
+			int b = Integer.parseInt(strs[3].split(",")[2]);
+			setColorBody(new Color(r, g, b));
+		}
+		this.countPassengers = 0;
+		startPosX = 75;
+		startPosY = 90;
+	}
 
 	@Override
 	protected void setMaxSpeed(int value) {
@@ -89,5 +107,9 @@ public class CivillianAircraft extends Aircraft {
 		xPoints = new int[] { x + 4, x - 23, x - 7, x + 8, x + 4 };
 		yPoints = new int[] { y + 5, y + 15, y - 29, y - 29, y + 5 };
 		g.fillPolygon(xPoints, yPoints, xPoints.length);
+	}
+	
+	public String getInfo() {
+		return getMaxSpeed() + ";" + getMaxCountPassengers() + ";" + getWeight() + ";" + getColorBody().getRed() + "," + getColorBody().getGreen() + "," + getColorBody().getBlue(); 
 	}
 }

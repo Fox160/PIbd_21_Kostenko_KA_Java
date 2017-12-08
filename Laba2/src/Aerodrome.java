@@ -1,4 +1,7 @@
 import java.awt.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,5 +89,111 @@ public class Aerodrome {
 		}
 
 		drawAircraft(g);
+	}
+
+	public boolean saveData(String fileName) {
+		File file = new File(fileName);
+		if (file.exists()) {
+			file.delete();
+		}
+
+		try (FileOutputStream fileStream = new FileOutputStream(file)) {
+			try (BufferedOutputStream bs = new BufferedOutputStream(fileStream)) {
+				String s = "CountLeveles:" + aerodrome.size() + System.lineSeparator();
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+				for (int i = 0; i < s.length(); i++) {
+					bos.write(s.charAt(i));
+				}
+
+				byte[] info = bos.toByteArray();
+				fileStream.write(info, 0, info.length);
+
+				for (ClassArray<ITech> level : aerodrome) {
+					bos = new ByteArrayOutputStream();
+					s = "Level" + System.lineSeparator();
+
+					for (int i = 0; i < s.length(); i++) {
+						bos.write(s.charAt(i));
+					}
+					info = bos.toByteArray();
+					fileStream.write(info, 0, info.length);
+
+					for (int i = 0; i < countPlaces; i++) {
+						ITech aircraft = level.getPlace(i);
+
+						if (aircraft != null) {
+							bos = new ByteArrayOutputStream();
+							String aircraftInfoStr = aircraft.getClass().getName() + ":" + aircraft.getInfo() + System.lineSeparator();  
+							for (int j = 0; j < aircraftInfoStr.length(); j++) {
+								bos.write(aircraftInfoStr.charAt(j));
+							}
+							info = bos.toByteArray();
+							fileStream.write(info, 0, info.length);							
+						}
+					}
+				}
+			}
+			fileStream.close();
+			return true;
+		} catch (IOException ex) {
+			return false;
+		}
+	}
+
+	public boolean loadData(String fileName) {
+		File file = new File(fileName);
+		if (!file.exists()) {
+			return false;
+		}
+		
+		try (FileInputStream fileStream = new FileInputStream(fileName)) {
+			String s = "";
+			try (BufferedInputStream bs = new BufferedInputStream(fileStream)) {
+				Path path = Paths.get(file.getAbsolutePath());
+				byte[] b = new byte[fileStream.available()];
+				b = Files.readAllBytes(path);
+
+				ByteArrayInputStream bos = new ByteArrayInputStream(b);
+				String value = new String(b, StandardCharsets.UTF_8);
+				
+				while (bos.read(b, 0, b.length) > 0) {
+					s += value;
+				}
+				
+				s = s.replace("\r", "");
+				String[] strs = s.split("\n");
+				if (strs[0].contains("CountLeveles")) {
+					if (aerodrome != null) {
+						aerodrome.clear();
+					}
+					aerodrome = new ArrayList<ClassArray<ITech>>();
+				} else
+					return false;
+				
+				int counter = -1;
+				for (int i = 0; i < strs.length; i++) {
+					if (strs[i].startsWith("Level")) {
+						counter++;
+						aerodrome.add(new ClassArray<ITech>(countPlaces, null));
+					} else if (strs[i].startsWith("CivillianAircraft")) {
+						ITech aircraft = new CivillianAircraft(strs[i].split(":")[1]);
+						int number = aerodrome.get(counter).addAircraft(aircraft);
+						if (number == -1) {
+							return false;
+						}
+					} else if (strs[i].startsWith("FighterAircraft")) {
+						ITech aircraft = new FighterAircraft(strs[i].split(":")[1]);
+						int number = aerodrome.get(counter).addAircraft(aircraft);
+						if (number == -1) {
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		} catch (IOException ex) {
+			return false;
+		}
 	}
 }

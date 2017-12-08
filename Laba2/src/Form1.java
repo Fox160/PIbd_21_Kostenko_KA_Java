@@ -1,6 +1,10 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.event.*;
+import java.io.File;
+import java.util.Scanner;
 
 public class Form1 {
 
@@ -71,6 +75,63 @@ public class Form1 {
 		aerodromeJPanel = new AerodromePanel(aerodrome);
 		aerodromeJPanel.setBounds(0, 0, 845, 509);
 		frame.getContentPane().add(aerodromeJPanel);
+
+		JMenuBar menuBar = new JMenuBar();
+		JMenu fileMenu = new JMenu("Файл");
+
+		JMenuItem saveMenu = new JMenuItem("Сохранить");
+		saveMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser fileChooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("txt file", "txt", "text");
+				fileChooser.setFileFilter(filter);
+				
+				if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					String path = file.getAbsolutePath();
+					
+					if (!file.getAbsolutePath().endsWith(".txt")) {
+						path += ".txt";
+					}
+					if (aerodrome.saveData(path)) {
+						JOptionPane.showMessageDialog(frame, "Сохранение прошло успешно", "",
+								JOptionPane.INFORMATION_MESSAGE);
+						return;
+					} else {
+						JOptionPane.showMessageDialog(frame, "Не удалось сохранить файл", "",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+				}
+			}
+		});
+		fileMenu.add(saveMenu);
+
+		JMenuItem loadMenu = new JMenuItem("Загрузить");
+		loadMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				JFileChooser fileChooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("txt file", "txt", "text");
+				fileChooser.setFileFilter(filter);
+				
+				if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					if (aerodrome.loadData(file.getAbsolutePath())) {
+						JOptionPane.showMessageDialog(frame, "Загрузили", "", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(frame, "Не удалось загрузить файл", "",
+								JOptionPane.ERROR_MESSAGE);
+					}
+					draw();
+				}
+			}
+		});
+
+		fileMenu.add(loadMenu);
+		menuBar.add(fileMenu);
+
+		frame.setJMenuBar(menuBar);
 
 		JLabel label = new JLabel("");
 		label.setBorder(BorderFactory.createTitledBorder("Забрать самолёт"));
