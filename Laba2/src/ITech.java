@@ -13,4 +13,6 @@ public interface ITech {
 	int getPassenger();
 
 	void setMainColor(Color color);
+	
+	String getInfo();
 }
