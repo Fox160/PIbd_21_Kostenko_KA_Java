@@ -37,11 +37,11 @@ public class Aerodrome {
 		}
 	}
 
-	public int putAircraftInAerodrome(ITech aircraft) {
+	public int putAircraftInAerodrome(ITech aircraft) throws AerodromeOverflowException {
 		return aerodrome.get(currentLevel).addAircraft(aircraft);
 	}
 
-	public ITech getAircraftInAerodrome(int ticket) {
+	public ITech getAircraftInAerodrome(int ticket) throws AerodromeIndexOutOfRangeException {
 		return aerodrome.get(currentLevel).dec(ticket);
 	}
 
@@ -100,7 +100,7 @@ public class Aerodrome {
 		try (FileOutputStream fileStream = new FileOutputStream(file)) {
 			try (BufferedOutputStream bs = new BufferedOutputStream(fileStream)) {
 				String s = "CountLeveles:" + aerodrome.size() + System.lineSeparator();
-				
+
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 				for (int i = 0; i < s.length(); i++) {
@@ -125,12 +125,13 @@ public class Aerodrome {
 
 						if (aircraft != null) {
 							bos = new ByteArrayOutputStream();
-							String aircraftInfoStr = aircraft.getClass().getName() + ":" + aircraft.getInfo() + System.lineSeparator();  
+							String aircraftInfoStr = aircraft.getClass().getName() + ":" + aircraft.getInfo()
+									+ System.lineSeparator();
 							for (int j = 0; j < aircraftInfoStr.length(); j++) {
 								bos.write(aircraftInfoStr.charAt(j));
 							}
 							info = bos.toByteArray();
-							fileStream.write(info, 0, info.length);							
+							fileStream.write(info, 0, info.length);
 						}
 					}
 				}
@@ -147,22 +148,22 @@ public class Aerodrome {
 		if (!file.exists()) {
 			return false;
 		}
-		
+
 		try (FileInputStream fileStream = new FileInputStream(fileName)) {
 			String s = "";
 			try (BufferedInputStream bs = new BufferedInputStream(fileStream)) {
-				
+
 				Path path = Paths.get(file.getAbsolutePath());
 				byte[] b = new byte[fileStream.available()];
 				b = Files.readAllBytes(path);
 
 				ByteArrayInputStream bos = new ByteArrayInputStream(b);
 				String value = new String(b, StandardCharsets.UTF_8);
-				
+
 				while (bos.read(b, 0, b.length) > 0) {
 					s += value;
 				}
-				
+
 				s = s.replace("\r", "");
 				String[] strs = s.split("\n");
 				if (strs[0].contains("CountLeveles")) {
@@ -172,7 +173,7 @@ public class Aerodrome {
 					aerodrome = new ArrayList<ClassArray<ITech>>();
 				} else
 					return false;
-				
+
 				int counter = -1;
 				for (int i = 0; i < strs.length; i++) {
 					if (strs[i].startsWith("Level")) {
@@ -180,14 +181,16 @@ public class Aerodrome {
 						aerodrome.add(new ClassArray<ITech>(countPlaces, null));
 					} else if (strs[i].startsWith("CivillianAircraft")) {
 						ITech aircraft = new CivillianAircraft(strs[i].split(":")[1]);
-						int number = aerodrome.get(counter).addAircraft(aircraft);
-						if (number == -1) {
+						try {
+							int number = aerodrome.get(counter).addAircraft(aircraft);
+						} catch (AerodromeOverflowException ex) {
 							return false;
 						}
 					} else if (strs[i].startsWith("FighterAircraft")) {
 						ITech aircraft = new FighterAircraft(strs[i].split(":")[1]);
-						int number = aerodrome.get(counter).addAircraft(aircraft);
-						if (number == -1) {
+						try {
+							int number = aerodrome.get(counter).addAircraft(aircraft);
+						} catch (AerodromeOverflowException ex) {
 							return false;
 						}
 					}
