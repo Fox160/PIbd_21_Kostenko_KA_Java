@@ -14,9 +14,9 @@ public class ClassArray<T extends ITech> {
 		maxCount = sizes;
 	}
 
-	public int addAircraft(T aircraft) {
+	public int addAircraft(T aircraft) throws AerodromeOverflowException{
 		if (this.places.size() == this.maxCount) {
-			return -1;
+			throw new AerodromeOverflowException();
 		}
 
 		for (int i = 0; i < this.places.size(); i++) {
@@ -29,13 +29,13 @@ public class ClassArray<T extends ITech> {
 		return this.places.size() - 1;
 	}
 
-	public T dec(int index) {
+	public T dec(int index) throws AerodromeIndexOutOfRangeException {
 		if (this.places.containsKey(index)) {
 			T aircraft = this.getPlace(index);
 			this.places.remove(index);
 			return aircraft;
 		}
-		return this.defaultValue;
+		throw new AerodromeIndexOutOfRangeException();
 	}
 
 	private boolean CheckFreePlace(int index) {

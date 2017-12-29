@@ -1,10 +1,10 @@
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.awt.event.*;
 import java.io.File;
-import java.util.Scanner;
+import java.io.IOException;
+import java.util.logging.*;
 
 public class Form1 {
 
@@ -15,6 +15,8 @@ public class Form1 {
 
 	private Aerodrome aerodrome;
 	private JTextField textField;
+
+	private static Logger log;
 
 	JButton buttonSetAircraft = new JButton(
 			"\u0417\u0430\u043A\u0430\u0437\u0430\u0442\u044C \u0441\u0430\u043C\u043E\u043B\u0451\u0442");
@@ -42,13 +44,27 @@ public class Form1 {
 	 */
 	public Form1() {
 		aerodrome = new Aerodrome(5);
-		DefaultListModel<String> model = new DefaultListModel<>();
 
+		log = Logger.getLogger(Form1.class.getName());
+		FileHandler fileHandler = null;
+		try {
+			fileHandler = new FileHandler("D:\\JavaLog.txt");
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		log.addHandler(fileHandler);
+
+		DefaultListModel<String> model = new DefaultListModel<>();
 		for (int i = 1; i < 6; i++) {
 			listLevels = new JList<>(model);
 			model.addElement("Уровень " + i);
 		}
 		initialize();
+
 		listLevels.setFont(new Font("Microsoft Sans Serif", Font.PLAIN, 11));
 		listLevels.setSelectedIndex(aerodrome.getCurrentLevel());
 
@@ -85,21 +101,25 @@ public class Form1 {
 				JFileChooser fileChooser = new JFileChooser();
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("txt file", "txt", "text");
 				fileChooser.setFileFilter(filter);
-				
+
 				if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 					File file = fileChooser.getSelectedFile();
 					String path = file.getAbsolutePath();
-					
+
 					if (!file.getAbsolutePath().endsWith(".txt")) {
 						path += ".txt";
 					}
 					if (aerodrome.saveData(path)) {
 						JOptionPane.showMessageDialog(frame, "Сохранение прошло успешно", "",
 								JOptionPane.INFORMATION_MESSAGE);
+
+						log.log(Level.INFO, "Сохранение файла в " + path);
 						return;
 					} else {
 						JOptionPane.showMessageDialog(frame, "Не удалось сохранить файл", "",
 								JOptionPane.ERROR_MESSAGE);
+
+						log.log(Level.WARNING, "Неудача при сохранении файла");
 						return;
 					}
 				}
@@ -114,14 +134,17 @@ public class Form1 {
 				JFileChooser fileChooser = new JFileChooser();
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("txt file", "txt", "text");
 				fileChooser.setFileFilter(filter);
-				
+
 				if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					File file = fileChooser.getSelectedFile();
 					if (aerodrome.loadData(file.getAbsolutePath())) {
 						JOptionPane.showMessageDialog(frame, "Загрузили", "", JOptionPane.INFORMATION_MESSAGE);
+
+						log.log(Level.INFO, "Загрузка файла из " + file.getAbsolutePath());
 					} else {
 						JOptionPane.showMessageDialog(frame, "Не удалось загрузить файл", "",
 								JOptionPane.ERROR_MESSAGE);
+						log.log(Level.WARNING, "Неудача при сохранении файла");
 					}
 					draw();
 				}
@@ -157,19 +180,29 @@ public class Form1 {
 			public void actionPerformed(ActionEvent arg0) {
 				dialog = new FormSelectAircraft(frame);
 				if (dialog.execute()) {
+
+					log.info("Открыто окно с заказом самолёта");
+
 					ITech aircraft = dialog.getAircraft();
+					log.log(Level.INFO, "Создание самолёта с параметрами " + dialog.getAircraft().getInfo());
 					if (aircraft == null) {
 						JOptionPane.showMessageDialog(frame, "Самолёт не создан");
 						return;
 					}
-					int place = aerodrome.putAircraftInAerodrome(aircraft);
-					if (place != -1) {
-						aerodromeJPanel.repaint();
-						JOptionPane.showMessageDialog(frame, "Ваше место " + (place + 1));
-					} else {
-						JOptionPane.showMessageDialog(frame, "Мест нет");
-					}
+					try {
+						int place = aerodrome.putAircraftInAerodrome(aircraft);
+						if (place != -1) {
+							aerodromeJPanel.repaint();
+							JOptionPane.showMessageDialog(frame, "Ваше место " + (place + 1));
 
+							log.log(Level.INFO, "Поставили самолет на место: " + place);
+						}
+					} catch (AerodromeOverflowException ex) {
+						JOptionPane.showMessageDialog(frame, "Мест нет", "Ошибка переполнения",
+								JOptionPane.ERROR_MESSAGE);
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(frame, "Общая ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			}
 		});
@@ -179,15 +212,26 @@ public class Form1 {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (textField.getText() != "") {
-						ITech aircraft = aerodrome.getAircraftInAerodrome(Integer.parseInt(textField.getText()));
+						try {
+							ITech aircraft = aerodrome.getAircraftInAerodrome(Integer.parseInt(textField.getText()));
 
-						if (aircraft == null) {
-							JOptionPane.showMessageDialog(frame, "Самолёта нет", "Ошибка", JOptionPane.ERROR_MESSAGE);
-							return;
+							if (aircraft == null) {
+								JOptionPane.showMessageDialog(frame, "Самолёта нет", "Ошибка",
+										JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+							aerodromeJPanel.updateAerodrome(aerodrome);
+							aircraft.setPosition(90, 90);
+							aircraftJPanel.updateAircraft(aircraft);
+
+							log.log(Level.INFO, "Забрали самолёт с места: " + textField.getText());
+						} catch (AerodromeIndexOutOfRangeException ex) {
+							JOptionPane.showMessageDialog(frame, "Неверный номер", "Ошибка номера",
+									JOptionPane.ERROR_MESSAGE);
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(frame, "Общая ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
 						}
-						aerodromeJPanel.updateAerodrome(aerodrome);
-						aircraft.setPosition(90, 90);
-						aircraftJPanel.updateAircraft(aircraft);
+
 					}
 				} catch (NumberFormatException ex) {
 					JOptionPane.showMessageDialog(frame, "Позиция самолёта не введена", "Ошибка",
@@ -204,6 +248,9 @@ public class Form1 {
 			public void actionPerformed(ActionEvent arg0) {
 				aerodrome.levelDown();
 				listLevels.setSelectedIndex(aerodrome.getCurrentLevel());
+
+				log.log(Level.INFO, "Переход на уровень ниже. Текущий уровень: " + aerodrome.getCurrentLevel());
+
 				draw();
 			}
 		});
@@ -215,6 +262,9 @@ public class Form1 {
 			public void actionPerformed(ActionEvent e) {
 				aerodrome.levelUp();
 				listLevels.setSelectedIndex(aerodrome.getCurrentLevel());
+
+				log.log(Level.INFO, "Переход на уровень выше. Текущий уровень: " + aerodrome.getCurrentLevel());
+
 				draw();
 			}
 		});
