@@ -74,6 +74,6 @@ public abstract class Aircraft implements ITech {
 	public void setMainColor(Color color) {
 		colorBody = color;
 	}
-	
-	 public abstract String getInfo();
+
+	public abstract String getInfo();
 }

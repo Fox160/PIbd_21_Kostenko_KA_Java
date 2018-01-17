@@ -19,31 +19,89 @@ public class FighterAircraft extends CivillianAircraft {
 		this.starWings = starWings;
 		this.dopColor = dopColor;
 	}
-	
+
 	public FighterAircraft(String info) {
 		super(info);
 		String[] strs = info.split(";");
-		
+
 		if (strs.length == 8) {
 			setMaxSpeed(Integer.parseInt(strs[0]));
 			setMaxCountPassengers(Integer.parseInt(strs[1]));
 			setWeight(Integer.parseInt(strs[2]));
-			
+
 			int r = Integer.parseInt(strs[3].split(",")[0]);
 			int g = Integer.parseInt(strs[3].split(",")[1]);
 			int b = Integer.parseInt(strs[3].split(",")[2]);
 			setColorBody(new Color(r, g, b));
-			
+
 			starBody = Boolean.parseBoolean(strs[4]);
 			starTale = Boolean.parseBoolean(strs[5]);
 			starWings = Boolean.parseBoolean(strs[6]);
-			
+
 			r = Integer.parseInt(strs[7].split(",")[0]);
 			g = Integer.parseInt(strs[7].split(",")[1]);
 			b = Integer.parseInt(strs[7].split(",")[2]);
 			setDopColor(new Color(r, g, b));
 		}
-		
+
+	}
+
+	public boolean isStarBody() {
+		return starBody;
+	}
+
+	public boolean isStarTale() {
+		return starTale;
+	}
+
+	public boolean isStarWings() {
+		return starWings;
+	}
+
+	public Color getDopColor() {
+		return dopColor;
+	}
+
+	@Override
+	public int compareTo(CivillianAircraft other) {
+		int res = super.compareTo(other);
+		if (res != 0)
+			return res;
+
+		FighterAircraft otherAircraft = (FighterAircraft) other;
+
+		if (starBody != otherAircraft.isStarBody())
+			return new Boolean(starBody).compareTo(new Boolean(otherAircraft.isStarBody()));
+		if (starTale != otherAircraft.isStarTale())
+			return new Boolean(starTale).compareTo(new Boolean(otherAircraft.isStarTale()));
+		if (starWings != otherAircraft.isStarWings())
+			return new Boolean(starWings).compareTo(new Boolean(otherAircraft.isStarWings()));
+		if (dopColor.getRGB() != otherAircraft.getDopColor().getRGB())
+			return new Integer(dopColor.getRGB()).compareTo(new Integer(otherAircraft.getDopColor().getRGB()));
+		return 0;
+	}
+
+	public boolean equals(FighterAircraft other) {
+		boolean res = equals((CivillianAircraft) other);
+		if (!res)
+			return res;
+		if (starBody != other.isStarBody())
+			return false;
+		if (starTale != other.isStarTale())
+			return false;
+		if (starWings != other.isStarWings())
+			return false;
+		return true;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (!(obj instanceof FighterAircraft))
+			return false;
+		FighterAircraft aircraftObj = (FighterAircraft) obj;
+		return equals(aircraftObj);
 	}
 
 	protected int getAmmunition() {
@@ -86,8 +144,10 @@ public class FighterAircraft extends CivillianAircraft {
 	public void setDopColor(Color color) {
 		dopColor = color;
 	}
-	
+
 	public String getInfo() {
-		return getMaxSpeed() + ";" + getMaxCountPassengers() + ";" + getWeight() + ";" + getColorBody().getRed() + "," + getColorBody().getGreen() + "," + getColorBody().getBlue() + ";" +  starBody + ";" + starTale + ";" + starWings + ";" + dopColor.getRed() + "," + dopColor.getGreen() + "," + dopColor.getBlue(); 
+		return getMaxSpeed() + ";" + getMaxCountPassengers() + ";" + getWeight() + ";" + getColorBody().getRed() + ","
+				+ getColorBody().getGreen() + "," + getColorBody().getBlue() + ";" + starBody + ";" + starTale + ";"
+				+ starWings + ";" + dopColor.getRed() + "," + dopColor.getGreen() + "," + dopColor.getBlue();
 	}
 }
