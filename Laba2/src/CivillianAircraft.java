@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.util.Random;
 
-public class CivillianAircraft extends Aircraft {
+public class CivillianAircraft extends Aircraft implements Comparable<CivillianAircraft> {
 
 	public CivillianAircraft(int maxSpeed, int maxCountPassenger, int weight, Color color) {
 		setMaxSpeed(maxSpeed);
@@ -13,15 +13,15 @@ public class CivillianAircraft extends Aircraft {
 		startPosX = 75;
 		startPosY = 90;
 	}
-	
+
 	public CivillianAircraft(String info) {
 		String[] strs = info.split(";");
-		
+
 		if (strs.length == 4) {
 			setMaxSpeed(Integer.parseInt(strs[0]));
 			setMaxCountPassengers(Integer.parseInt(strs[1]));
 			setWeight(Integer.parseInt(strs[2]));
-			
+
 			int r = Integer.parseInt(strs[3].split(",")[0]);
 			int g = Integer.parseInt(strs[3].split(",")[1]);
 			int b = Integer.parseInt(strs[3].split(",")[2]);
@@ -30,6 +30,50 @@ public class CivillianAircraft extends Aircraft {
 		this.countPassengers = 0;
 		startPosX = 75;
 		startPosY = 90;
+	}
+
+	@Override
+	public int compareTo(CivillianAircraft other) {
+		if (other == null)
+			return 1;
+		if (getMaxSpeed() != other.getMaxSpeed())
+			return new Integer(maxSpeed).compareTo(new Integer(other.getMaxSpeed()));
+		if (getMaxCountPassengers() != other.getMaxCountPassengers())
+			return new Integer(getMaxCountPassengers()).compareTo(other.getMaxCountPassengers());
+		if (getWeight() != other.getWeight())
+			return new Integer(getWeight()).compareTo(other.getWeight());
+		if (getColorBody().getRGB() != other.getColorBody().getRGB())
+			return new Integer(getColorBody().getRGB()).compareTo(other.getColorBody().getRGB());
+		return 0;
+	}
+
+	public boolean equals(CivillianAircraft other) {
+		if (other == null)
+			return false;
+		if (getMaxSpeed() != other.getMaxSpeed())
+			return false;
+		if (getMaxCountPassengers() != other.getMaxCountPassengers())
+			return false;
+		if (getWeight() != other.getWeight())
+			return false;
+		if (getColorBody().getRGB() != other.getColorBody().getRGB())
+			return false;
+		return true;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (!(obj instanceof CivillianAircraft))
+			return false;
+		CivillianAircraft aircraftObj = (CivillianAircraft) obj;
+		return equals(aircraftObj);
+	}
+
+	@Override
+	public int hashCode() {
+		return ((Integer) maxSpeed).hashCode();
 	}
 
 	@Override
@@ -108,8 +152,10 @@ public class CivillianAircraft extends Aircraft {
 		yPoints = new int[] { y + 5, y + 15, y - 29, y - 29, y + 5 };
 		g.fillPolygon(xPoints, yPoints, xPoints.length);
 	}
-	
+
 	public String getInfo() {
-		return getMaxSpeed() + ";" + getMaxCountPassengers() + ";" + getWeight() + ";" + getColorBody().getRed() + "," + getColorBody().getGreen() + "," + getColorBody().getBlue(); 
+		return getMaxSpeed() + ";" + getMaxCountPassengers() + ";" + getWeight() + ";" + getColorBody().getRed() + ","
+				+ getColorBody().getGreen() + "," + getColorBody().getBlue();
 	}
+
 }

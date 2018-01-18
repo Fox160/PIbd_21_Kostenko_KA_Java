@@ -68,8 +68,19 @@ public class Form1 {
 		listLevels.setFont(new Font("Microsoft Sans Serif", Font.PLAIN, 11));
 		listLevels.setSelectedIndex(aerodrome.getCurrentLevel());
 
-		buttonSetAircraft.setBounds(890, 207, 142, 60);
+		buttonSetAircraft.setBounds(890, 185, 155, 35);
 		frame.getContentPane().add(buttonSetAircraft);
+
+		JButton btnSort = new JButton("Sort");
+		btnSort.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				aerodrome.sort();
+				JOptionPane.showMessageDialog(frame, "Отсортировано", "", JOptionPane.INFORMATION_MESSAGE);
+				draw();
+			}
+		});
+		btnSort.setBounds(890, 231, 155, 35);
+		frame.getContentPane().add(btnSort);
 		draw();
 	}
 
@@ -201,7 +212,7 @@ public class Form1 {
 						JOptionPane.showMessageDialog(frame, "Мест нет", "Ошибка переполнения",
 								JOptionPane.ERROR_MESSAGE);
 					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(frame, "Общая ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(frame, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}

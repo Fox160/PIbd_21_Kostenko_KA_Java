@@ -37,7 +37,7 @@ public class Aerodrome {
 		}
 	}
 
-	public int putAircraftInAerodrome(ITech aircraft) throws AerodromeOverflowException {
+	public int putAircraftInAerodrome(ITech aircraft) throws AerodromeOverflowException, AerodromeAlreadyHaveException {
 		return aerodrome.get(currentLevel).addAircraft(aircraft);
 	}
 
@@ -46,13 +46,16 @@ public class Aerodrome {
 	}
 
 	public void drawAircraft(Graphics g) {
-		for (int i = 0; i < countPlaces; i++) {
-			ITech aircraft = aerodrome.get(currentLevel).getPlace(i);
-			if (aircraft != null) {
-				aircraft.setPosition(70 + i / 5 * placeSizeWidth + 5, i % 5 * placeSizeHeight * 12 / 10 + 80);
-				aircraft.drawAircraft(g);
-			}
+		int i = 0;
+		for (ITech aircraft : aerodrome.get(currentLevel)) {
+			aircraft.setPosition(70 + i / 5 * placeSizeWidth + 5, i % 5 * placeSizeHeight * 12 / 10 + 80);
+			aircraft.drawAircraft(g);
+			i++;
 		}
+	}
+
+	public void sort() {
+		aerodrome.sort(null);
 	}
 
 	public void drawAerodrome(Graphics g) {
@@ -185,12 +188,16 @@ public class Aerodrome {
 							int number = aerodrome.get(counter).addAircraft(aircraft);
 						} catch (AerodromeOverflowException ex) {
 							return false;
+						} catch (AerodromeAlreadyHaveException e) {
+							return false;
 						}
 					} else if (strs[i].startsWith("FighterAircraft")) {
 						ITech aircraft = new FighterAircraft(strs[i].split(":")[1]);
 						try {
 							int number = aerodrome.get(counter).addAircraft(aircraft);
 						} catch (AerodromeOverflowException ex) {
+							return false;
+						} catch (AerodromeAlreadyHaveException e) {
 							return false;
 						}
 					}
